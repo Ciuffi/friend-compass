@@ -37,7 +37,7 @@ public class Client {
             kkSocket = new Socket(ip, port);
             out = new PrintWriter(kkSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));
-            System.out.println("Client sending test...");
+            System.out.println("Client sending initial data...");
             out.println("5.0/6.0");
             connected = true;
         } catch (IOException e) {

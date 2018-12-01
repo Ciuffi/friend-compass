@@ -28,7 +28,7 @@ public class ConnectionHandler implements Runnable{
                 System.out.println("Server received: " + received);
                 Host.positions.replace(clientSocket.getInetAddress().getHostAddress(), ParseClientReply(received));
                 Host.PrintPositions();
-                //SendUpdatedPositions();
+                SendUpdatedPositions();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,6 +52,7 @@ public class ConnectionHandler implements Runnable{
 
 
     public void SendUpdatedPositions(){
+        System.out.println("Sending updated dict to client");
         out.println(DictDecoder.EncodeDict(Host.positions));
     }
 }
