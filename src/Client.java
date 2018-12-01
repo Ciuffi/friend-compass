@@ -25,7 +25,7 @@ public class Client {
             PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader( new InputStreamReader(kkSocket.getInputStream()));
             System.out.println("Client sending test...");
-            out.println("client test");
+            out.println("5.0/6.0");
         } catch (IOException e) {
             e.printStackTrace();
         }
