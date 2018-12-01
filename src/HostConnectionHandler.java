@@ -7,13 +7,13 @@ import java.net.Socket;
 /**
  * Created by Austin on 2018-12-01.
  */
-public class ConnectionHandler implements Runnable{
+public class HostConnectionHandler implements Runnable{
 
     PrintWriter out;
     BufferedReader in;
     Socket clientSocket;
 
-    public ConnectionHandler(Socket clientSocket){
+    public HostConnectionHandler(Socket clientSocket){
         this.clientSocket = clientSocket;
     }
 

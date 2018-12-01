@@ -1,16 +1,9 @@
-import javafx.util.Pair;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,7 +30,7 @@ public class Host {
                 Socket clientSocket = serverSocket.accept();
                 positions.put(clientSocket.getInetAddress().getHostAddress(), new Double[]{0.0, 0.0});
                 PrintPositions();
-                Runnable connectionHandler = new ConnectionHandler(clientSocket);
+                Runnable connectionHandler = new HostConnectionHandler(clientSocket);
                 new Thread(connectionHandler).start();
             }
         } catch (IOException e) {
