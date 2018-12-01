@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import java.util.Map;
 
 class updateHandler implements Runnable {
     public void run() {
-        Client.updateDict();
+        Client.UpdateDict();
     }
 }
 
@@ -23,7 +24,7 @@ public class Client {
     private static updateHandler uHandler;
     private static BufferedReader in;
     private static boolean connected = false;
-    private static Map<String, Double[]> IPDict = new HashMap<>();
+    private static Map<String, Double[]> positions = new HashMap<>();
 
     public Client(String ip, int port) {
         JoinSession(ip, port);
@@ -45,12 +46,13 @@ public class Client {
         }
     }
 
-    static void updateDict() {
+    static void UpdateDict() {
         while (true) {
             try {
                 String recieved = in.readLine();
                 if (recieved != null) {
-                    IPDict = DictDecoder.DecodeDict(recieved);
+                    positions = DictDecoder.DecodeDict(recieved);
+                    PrintPositions();
                 }
             } catch (java.io.IOException ex) {
             }
@@ -58,7 +60,7 @@ public class Client {
     }
 
     public static Double[] getLatLonById(String id) {
-        return IPDict.get(id);
+        return positions.get(id);
     }
 
 
@@ -77,5 +79,14 @@ public class Client {
 
         System.out.println(ipAddress.substring(0, ipAddress.length() - 1));
         return ipAddress;
+    }
+
+
+    public static void PrintPositions(){
+        for (Map.Entry<String, Double[]> entry : positions.entrySet()) {
+            String key = entry.getKey();
+            Double[] value = entry.getValue();
+            System.out.println("Key: " + key + ", Position: " + Arrays.toString(value));
+        }
     }
 }
