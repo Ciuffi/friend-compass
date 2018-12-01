@@ -1,16 +1,25 @@
+import javafx.util.Pair;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Austin on 2018-12-01.
  */
 public class Host {
+
+    static ConcurrentHashMap<String, Double[]> positions = new ConcurrentHashMap<>();
 
     public static void main(String[] args){
         HostSession();
@@ -18,31 +27,24 @@ public class Host {
 
 
     public Host(){
-
     }
 
 
     public static void HostSession(){
         try {
             ServerSocket serverSocket = new ServerSocket(3000);
-            Socket clientSocket = serverSocket.accept();
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
-            String received;
-            while ((received = in.readLine()) != null) {
-                System.out.println("Server received: " + received);
+            while(true) {
+                Socket clientSocket = serverSocket.accept();
+                positions.put(clientSocket.getInetAddress().getHostAddress(), new Double[]{0.0, 0.0});
+                PrintPositions();
+                Runnable connectionHandler = new ConnectionHandler(clientSocket);
+                new Thread(connectionHandler).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
-    public void SendHostCode(){
-        String code = GenerateHostCode();
-        // TODO send host code to server
-    }
 
 
     public String GenerateHostCode(){
@@ -71,5 +73,14 @@ public class Host {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    public static void PrintPositions(){
+        for (Map.Entry<String, Double[]> entry : positions.entrySet()) {
+            String key = entry.getKey();
+            Double[] value = entry.getValue();
+            System.out.println("Key: " + key + ", Position: " + Arrays.toString(value));
+        }
     }
 }
