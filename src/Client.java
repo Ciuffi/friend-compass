@@ -1,3 +1,5 @@
+import jdk.nashorn.internal.codegen.DumpBytecode;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -6,30 +8,73 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+
 
 /**
  * Created by Austin on 2018-12-01.
  */
 
-class updateHandler implements Runnable {
+class UpdateDictHandler implements Runnable {
     public void run() {
         Client.UpdateDict();
     }
 }
 
+
+class SendPositionUpdateHandler implements Runnable {
+
+    Socket clientSocket;
+    PrintWriter out;
+
+    public SendPositionUpdateHandler(Socket clientSocket){
+        this.clientSocket = clientSocket;
+    }
+
+    public void run(){
+
+        try {
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Random rand = new Random();
+
+        while(true){
+            Double lat = rand.nextDouble();
+            Double lon = rand.nextDouble();
+
+            System.out.println("Client sending: " + lat.toString() + "/" + lon.toString());
+            out.println(lat.toString() + "/" + lon.toString());
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+
 public class Client {
 
     private static Socket kkSocket;
     private static PrintWriter out;
-    private static updateHandler uHandler;
+    private static Runnable uHandler;
     private static BufferedReader in;
     private static boolean connected = false;
     private static Map<String, Double[]> positions = new HashMap<>();
 
     public Client(String ip, int port) {
         JoinSession(ip, port);
-        uHandler = new updateHandler();
-        uHandler.run();
+
+        uHandler = new UpdateDictHandler();
+        new Thread(uHandler).start();
+
+        Runnable positionUpdateHandler = new SendPositionUpdateHandler(kkSocket);
+        new Thread(positionUpdateHandler).start();
     }
 
 
